@@ -1,88 +1,276 @@
-## AndroidHttpCapture网络诊断工具      <br>
-是一款针对于移动流量劫持而开发的手机抓包软件，可以当作是Android版的‘Fiddler’<br>
-主要功能包括：手机端抓包、PING/DNS/TraceRoute诊断、抓包HAR数据上传分享<br>
-使用前请确保手机HTTP代理的关闭<br><br>
-### [Demo APK下载](http://static.hk.darkal.cn/har/demo.apk)<br>
+# AndroidHttpCapture
 
-### [点击查看操作手册](http://static.hk.darkal.cn/har/guide/widget.guide.html)<br><br>
+AndroidHttpCapture is an Android network diagnostic and packet capture tool designed for mobile traffic debugging. It can be considered a mobile version of **Fiddler** for Android.
 
+It supports on-device HTTP/HTTPS capture, HAR export, DNS/Ping/TraceRoute diagnostics, response modification, host configuration, WebView debugging, and system proxy capture for other apps.
 
-### 功能简介
-1． HTTP/HTTPS抓包<br>
-当用户通过AndroidHttpCapture访问页面的时候，所有的http请求都会被记录下来，然后这些请求包可以预览、分享、上传（上传接口的网址需自行在MainActivity修改）。<br>
-#### 第一次进入程序需要安装CA证书以便进行HTTPS抓包（原理同fiddler，MITM中间人）不安装证书的话无法抓取HTTPS的请求<br>
-#### 高版本的Android不允许跳转设置安装证书，需要自行在设置->安全和锁屏->加密与凭据->安装证书（证书位置：/har/littleproxy-mitm.pem）<br>
-预览页面可以查看从APP启动起所有网络请求数据，实现了按分页过滤、URL搜索功能，并可清空所有数据包<br>
-预览的内容包括Request Header、Request Cookie、Request Content、Response Header、Response Cookie、Response Content<br>
-Content内容如果为JSON将会自动格式化显示<br>
-![image](http://static.hk.darkal.cn/imgd.php?src=/2016/09/WechatIMG77.jpeg&width=350) 
-![image](http://static.hk.darkal.cn/imgd.php?src=/2016/09/230686663947787928.jpg&width=350)<br>
-分享功能将抓包生成的所有数据包打包为har文件并压缩为zip，支持分享到微信、QQ等<br><br>
+> **Note**
+> Before using AndroidHttpCapture, please make sure the phone’s existing HTTP proxy settings are disabled.
 
-2． 返回包注入<br>
-支持修改流量返回包（该版本暂时只支持http的修改）<br>
-![image](http://static.hk.darkal.cn/imgd.php?src=/2016/09/WechatIMG180.jpeg&width=350)
-![image](http://static.hk.darkal.cn/imgd.php?src=/2016/09/WechatIMG181.jpeg&width=350)<br><br>
+---
 
-3． 环境切换<br>
-支持切换模拟为微信、手Q，默认为普通浏览器。<br>
-![image](http://static.hk.darkal.cn/imgd.php?src=/2016/09/WechatIMG81.jpeg&width=350)<br><br>
+## Features
 
-4． 多样性输入：导航、地址栏、扫一扫、schema呼起<br>
-支持地址栏直接输入地址，扫扫描二维码，以及schema呼起app并打开目标页面。<br>
-schema的协议格式为：jdhttpmonitor://webview?param={'url'='http://www.darkal.cn'}<br><br>
+### 1. HTTP/HTTPS Capture
 
-5． Host配置<br>
-可以配置各域名的host<br>
-![image](http://static.hk.darkal.cn/imgd.php?src=/2016/09/WechatIMG79.jpeg&width=350&t=1)<br><br>
+When users open a webpage through AndroidHttpCapture, all HTTP requests will be recorded. Captured packets can be previewed, shared, and uploaded.
 
+The upload endpoint should be configured manually in `MainActivity`.
 
-6． 查看console.log日志<br>
-![image](http://static.hk.darkal.cn/imgd.php?src=/2016/09/WechatIMG82.jpeg&width=350)<br><br>
+On first launch, users need to install the CA certificate in order to capture HTTPS traffic. The principle is the same as Fiddler: HTTPS traffic is captured through a MITM proxy.
 
+If the certificate is not installed, HTTPS requests cannot be captured.
 
-7． 网络工具<br>
-目前AndroidHttpCapture集成了常见的网络工具，如dns,ping,以及设备信息<br>
-![image](http://static.hk.darkal.cn/imgd.php?src=/2016/09/621495078826.jpg&width=350)<br><br>
+For newer Android versions, the app may not be able to open the certificate installation page automatically. In that case, please install the certificate manually:
 
-8． 设置系统代理，监听其他app请求包<br>
-当将用户手机的代理服务器设置为127.0.0.1:8888时，可以对其他app（例如微信）的HTTP数据进行抓包<br>
-（此时AndroidHttpCapture就是一个手机上的fiddler）<br>
-![image](http://static.hk.darkal.cn/imgd.php?src=/2016/09/WechatIMG80.jpeg&width=350)<br><br>
+```text
+Settings -> Security & Lock Screen -> Encryption & Credentials -> Install Certificate
+```
 
-### Q & A<br>
-1. 分享的http包如何查看和分析？<br>
-    分享的文件解压后为.har文件,可以通过fiddler方式或者在线工具进行分析。<br>
-    Fiddler方式需要先将包导到电脑上，然后使用fiddler导入该包：Import Sessions->Select Import Format ->HTTPArchive ->选择包，即可<br>
-    在线工具外网：http://static.hk.darkal.cn/har/ 只需要将包拖入此工具即可分析<br><br>
+Certificate path:
 
-### 已知BUG<br>
-1. 信任所有的服务器证书不做校验<br>
-~~2. 开启返回包注入功能后，https返回的部分页面存在 err_CONTENT_LENGTH_MISMATCH 错误<br>~~（看起来似乎是解决了，待用户反馈）
+```text
+/har/littleproxy-mitm.pem
+```
 
-#### 如果觉得工具好用的话请多多star以及Pull requests<br>支持我喝杯咖啡请扫描下面的二维码，谢谢(ง •̀_•́)ง<br>
-![image](http://static.hk.darkal.cn/har/guide/img/code.jpg)<br><br>
+The preview page shows all network requests captured since the app started. It supports pagination, URL search, filtering, and clearing captured packets.
 
+The captured data includes:
 
-### 致谢<br>
-AndroidHttpCapture基于Netty、browsermob-proxy来实现核心抓包的功能<br>
-Netty is an asynchronous event-driven network application framework for rapid development of maintainable high performance protocol servers & clients.<br>
-https://github.com/netty/netty<br>
-由于Android5.0+不支持Provider 为JKS的证书，所以逆向修改了Netty库的证书部分适配Android系统（netty_android.jar）<br><br>
+- Request Headers
+- Request Cookies
+- Request Body
+- Response Headers
+- Response Cookies
+- Response Body
 
-A free utility to help web developers watch and manipulate network traffic from their AJAX applications.<br>
-https://github.com/lightbody/browsermob-proxy<br>
-修改了多处browsermob-proxy的源码适配Android系统<br><br>
+If the content is JSON, it will be automatically formatted for easier reading.
 
-MIT License<br>
+The share feature packages all captured packets into a HAR file and compresses it as a ZIP file, which can then be shared through apps such as WeChat, QQ, or other supported Android sharing targets.
+
+---
+
+### 2. Response Injection
+
+AndroidHttpCapture supports modifying response traffic.
+
+> Current limitation: this version only supports HTTP response modification.
+
+---
+
+### 3. Environment Switching
+
+The app supports switching between different simulated environments, including:
+
+- Normal browser
+- WeChat
+- QQ
+
+The default environment is a normal browser.
+
+---
+
+### 4. Multiple Input Methods
+
+AndroidHttpCapture supports multiple ways to open a target page:
+
+- Navigation menu
+- Address bar
+- QR code scanning
+- Schema launch
+
+Schema format:
+
+```text
+jdhttpmonitor://webview?param={'url'='http://www.darkal.cn'}
+```
+
+---
+
+### 5. Host Configuration
+
+The app supports custom host configuration for specific domains.
+
+This is useful for testing different backend environments or redirecting domain traffic during development.
+
+---
+
+### 6. Console Log Viewer
+
+AndroidHttpCapture can display `console.log` output from the WebView page, making it easier to debug hybrid apps and mobile web pages.
+
+---
+
+### 7. Network Tools
+
+AndroidHttpCapture includes several common network diagnostic tools, such as:
+
+- DNS lookup
+- Ping
+- Device information
+
+These tools help developers quickly diagnose network issues directly on the Android device.
+
+---
+
+### 8. System Proxy Capture
+
+When the phone’s proxy server is set to:
+
+```text
+127.0.0.1:8888
+```
+
+AndroidHttpCapture can capture HTTP traffic from other apps, such as WeChat.
+
+In this mode, AndroidHttpCapture works like a mobile Fiddler running directly on the phone.
+
+> **Security Notice**
+> Please only use this feature for debugging your own apps, test environments, or traffic that you are authorized to inspect.
+
+---
+
+## Demo APK
+
+Demo APK download:
+
+```text
+Please add your APK download link here.
+```
+
+---
+
+## User Guide
+
+Operation manual:
+
+```text
+Please add your user guide link here.
+```
+
+---
+
+## Q & A
+
+### How can I view and analyze shared HTTP packets?
+
+The shared file is a compressed ZIP file. After extracting it, you will get a `.har` file.
+
+You can analyze the HAR file using Fiddler or an online HAR viewer.
+
+#### Fiddler
+
+Import the HAR file into Fiddler:
+
+```text
+Import Sessions -> Select Import Format -> HTTPArchive -> Select HAR file
+```
+
+#### Online HAR Viewer
+
+You can also use an online HAR viewer:
+
+```text
+http://static.hk.darkal.cn/har/
+```
+
+Drag the HAR file into the tool to analyze it.
+
+---
+
+## Known Issues
+
+1. The app currently trusts all server certificates without validation.
+2. When response injection is enabled, some HTTPS pages may encounter:
+
+```text
+ERR_CONTENT_LENGTH_MISMATCH
+```
+
+This issue appears to have been improved, but more user feedback is needed.
+
+---
+
+## Implementation
+
+AndroidHttpCapture is built on top of **Netty** and **browsermob-proxy**.
+
+### Netty
+
+Netty is an asynchronous event-driven network application framework for rapid development of maintainable, high-performance protocol servers and clients.
+
+Project link:
+
+```text
+https://github.com/netty/netty
+```
+
+Because Android 5.0+ does not support certificates with the `JKS` provider, part of Netty’s certificate implementation was reverse-modified to adapt it to Android.
+
+The modified library is:
+
+```text
+netty_android.jar
+```
+
+### browsermob-proxy
+
+browsermob-proxy is a free utility that helps web developers watch and manipulate network traffic from AJAX applications.
+
+Project link:
+
+```text
+https://github.com/lightbody/browsermob-proxy
+```
+
+Several parts of browsermob-proxy were modified to make it compatible with Android.
+
+---
+
+## Contributing
+
+Contributions are welcome.
+
+If you find this project useful, please consider:
+
+- Starring the repository
+- Reporting bugs
+- Submitting pull requests
+- Improving documentation
+- Sharing feedback
+
+---
+
+## Support
+
+If you like this project and want to support its development, you can buy me a coffee.
+
+```text
+Please add your donation QR code or support link here.
+```
+
+---
+
+## Disclaimer
+
+AndroidHttpCapture is intended for legitimate development, debugging, testing, QA, and educational purposes.
+
+Do not use this tool to capture, inspect, modify, or distribute network traffic without proper authorization. The author is not responsible for any misuse of this software.
+
+---
+
+## License
+
+MIT License
+
 Copyright (c) 2016 AndroidHttpCapture
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+of this software and associated documentation files, to deal in the Software
+without restriction, including without limitation the rights to use, copy,
+modify, merge, publish, distribute, sublicense, and/or sell copies of the
+Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
 
 The above copyright notice and this permission notice shall be included in all
 copies or substantial portions of the Software.
